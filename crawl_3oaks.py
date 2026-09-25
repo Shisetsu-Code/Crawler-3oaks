@@ -109,6 +109,7 @@ def crawl(output: Path, *, page_size: int = 15, timeout: float = 30.0) -> list[d
 
     session = _new_session()
     records_by_name: dict[str, dict[str, str]] = {}
+    targets_by_name: dict[str, str] = {}
 
     try:
         page = 1
@@ -133,6 +134,10 @@ def crawl(output: Path, *, page_size: int = 15, timeout: float = 30.0) -> list[d
                 name = str(item.get("title_text") or item.get("name") or "").strip()
                 if not name:
                     continue
+
+                slug = str(item.get("name") or "").strip()
+                if slug:
+                    targets_by_name[name.casefold()] = f"{API_URL}/{slug}/play?lang=en"
 
                 raw_thumbnail = str(
                     item.get("main_logo_file")
@@ -174,8 +179,13 @@ def crawl(output: Path, *, page_size: int = 15, timeout: float = 30.0) -> list[d
     )
     tmp.replace(catalog_path)
 
+    targets_path = Path("targets.txt").resolve()
+    targets = [targets_by_name[key] for key in sorted(targets_by_name)]
+    targets_path.write_text("\n".join(targets) + ("\n" if targets else ""), encoding="utf-8")
+
     print(f"Listo: {len(records)} juegos")
     print(f"Catálogo: {catalog_path}")
+    print(f"Targets: {targets_path} ({len(targets)} URLs)")
     return records
 
 
