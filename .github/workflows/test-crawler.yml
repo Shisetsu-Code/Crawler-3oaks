@@ -3,6 +3,8 @@ name: Test 3 Oaks crawler
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 jobs:
