@@ -103,7 +103,7 @@ def _download_thumbnail(
     tmp.replace(target)
 
 
-def crawl(output: Path, *, page_size: int = 100, timeout: float = 30.0) -> list[dict[str, str]]:
+def crawl(output: Path, *, page_size: int = 15, timeout: float = 30.0) -> list[dict[str, str]]:
     output = output.resolve()
     output.mkdir(parents=True, exist_ok=True)
 
