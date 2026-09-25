@@ -1,0 +1,42 @@
+name: Test 3 Oaks crawler
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  crawl:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependency
+        run: python -m pip install --disable-pip-version-check requests
+      - name: Run crawler
+        run: python crawl_3oaks.py --output test-output
+      - name: Validate result
+        shell: python
+        run: |
+          import json
+          from pathlib import Path
+
+          root = Path("test-output")
+          catalog = json.loads((root / "catalog.json").read_text(encoding="utf-8"))
+          assert catalog, "catalog.json quedó vacío"
+
+          missing = []
+          empty = []
+          for row in catalog:
+              path = root / row["thumbnail"]
+              if not path.is_file():
+                  missing.append(str(path))
+              elif path.stat().st_size == 0:
+                  empty.append(str(path))
+
+          assert not missing, f"faltan miniaturas: {missing[:10]}"
+          assert not empty, f"miniaturas vacías: {empty[:10]}"
+          print(f"VALIDATED games={len(catalog)} thumbnails={len(catalog)}")
