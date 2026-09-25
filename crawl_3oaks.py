@@ -192,8 +192,8 @@ def main() -> int:
     parser.add_argument(
         "--page-size",
         type=int,
-        default=100,
-        help="Cantidad pedida por página al API (default: 100)",
+        default=15,
+        help="Cantidad pedida por página al API (default: 15; valor usado por 3 Oaks)",
     )
     parser.add_argument(
         "--timeout",
